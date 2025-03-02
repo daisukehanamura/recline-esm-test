@@ -72,7 +72,11 @@ npm install --save-dev concurrently nodemon ts-node
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
   },
   "include": ["src/server/**/*"],
   "exclude": ["node_modules"]
@@ -85,6 +89,7 @@ npm install --save-dev concurrently nodemon ts-node
 - `outDir`: コンパイル後のファイルの出力先
 - `rootDir`: ソースファイルのルートディレクトリ
 - `strict`: 厳格な型チェックを有効化
+- `paths`: パスエイリアスの設定（`@/`で`src/`ディレクトリを参照可能に）
 
 ## 4. package.jsonの設定
 
@@ -111,81 +116,137 @@ npm install --save-dev concurrently nodemon ts-node
 
 ## 5. ディレクトリ構造の作成
 
-```bash
-# サーバー用ディレクトリの作成
-mkdir src/server
-mkdir src/components
+推奨されるディレクトリ構造は以下の通りです：
+
+```
+src/
+├── components/          # Reactコンポーネント
+│   ├── __tests__/      # コンポーネント共通のテスト
+│   └── Profile/        # 個別のコンポーネントディレクトリ
+│       ├── Profile.tsx
+│       ├── Profile.test.tsx  # コンポーネント固有のテスト
+│       └── Profile.css
+├── server/             # バックエンド
+│   ├── __tests__/      # サーバーのテスト
+│   │   └── index.test.ts
+│   └── index.ts
+├── utils/             # 共通ユーティリティ関数
+│   ├── __tests__/     # ユーティリティのテスト
+│   └── index.ts
+└── tests/             # グローバルテスト設定
+    ├── setup.ts       # テストのセットアップ
+    └── mocks/         # モックデータ
 ```
 
-## 6. Expressサーバーの作成
+**ディレクトリ作成コマンド:**
+```bash
+# メインディレクトリ
+mkdir -p src/components/Profile
+mkdir -p src/server/__tests__
+mkdir -p src/utils/__tests__
+mkdir -p src/tests/mocks
 
-`src/server/index.ts`を作成：
+# テスト関連ファイルを移動
+mv src/setupTests.ts src/tests/setup.ts
+```
 
-```typescript
-import express, { Request, Response } from 'express';
-import cors from 'cors';
-import path from 'path';
+**テストファイルの配置について：**
+- コンポーネントのテスト:
+  - 個別のコンポーネントテスト → コンポーネントと同じディレクトリに配置
+  - 共通のテストユーティリティ → `__tests__`ディレクトリに配置
+- バックエンドのテスト:
+  - APIエンドポイントのテスト → `server/__tests__`に配置
+- グローバル設定:
+  - セットアップファイル → `tests/setup.ts`
+  - モックデータ → `tests/mocks`ディレクトリ
 
-const app = express();
-const port = process.env.PORT || 3001;
+## 6. テスト設定の更新
 
-// ミドルウェアの設定
-app.use(cors());
-app.use(express.json());
-app.use(express.static(path.join(__dirname, '../../build')));
+### Jestの設定
 
-// APIエンドポイントの例
-app.get('/api/hello', (_: Request, res: Response) => {
-  res.json({ message: 'Hello from Express!' });
-});
+`package.json`に以下の設定を追加：
 
-// その他のルートはReactアプリにフォールバック
-app.get('*', (_: Request, res: Response) => {
-  res.sendFile(path.join(__dirname, '../../build', 'index.html'));
-});
-
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
-
-export {};
+```json
+{
+  "jest": {
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/tests/setup.ts"
+    ],
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/src/$1"
+    }
+  }
+}
 ```
 
 **解説：**
-- `cors()`で異なるオリジン間のリクエストを許可
-- `express.json()`でJSONリクエストの解析を有効化
-- `express.static()`で静的ファイルの配信を設定
-- フォールバックルートでSPAの動作を実現
+- `setupFilesAfterEnv`: テスト実行前の共通設定ファイルを指定
+- `moduleNameMapper`: パスエイリアスの設定（`@/components/Profile`で`src/components/Profile`にアクセス）
 
 ## 起動方法
 
-1. 開発モード（フロントエンド＆バックエンド）:
+### 開発モード
+
+1. プロジェクトディレクトリに移動:
+```bash
+cd プロジェクト名
+```
+
+2. 依存パッケージのインストール:
+```bash
+npm install
+```
+
+3. アプリケーションの起動:
 ```bash
 npm start
 ```
 
-2. プロダクションビルド:
+### プロダクションモード
+
+1. アプリケーションのビルド:
 ```bash
 npm run build
+```
+
+2. サーバーの起動:
+```bash
 NODE_ENV=production node dist/server/index.js
 ```
 
-## 動作確認
-
-- フロントエンド: http://localhost:3000
-- バックエンドAPI: http://localhost:3001
-
 ## トラブルシューティング
 
-### よくある問題と解決方法
+### プロジェクトディレクトリでの操作
 
-1. ポートが既に使用されている場合:
+**問題：** 以下のようなエラーが表示される場合
+```
+npm ERR! code ENOENT
+npm ERR! syscall open
+npm ERR! path /path/to/directory/package.json
+npm ERR! errno -2
+npm ERR! enoent ENOENT: no such file or directory, open '/path/to/directory/package.json'
+```
+
+**原因と解決策：**
+1. 正しいディレクトリにいることを確認:
 ```bash
-# プロセスを確認
-lsof -i :3000
-lsof -i :3001
+pwd  # 現在のディレクトリを表示
+```
 
-# プロセスを終了
+2. プロジェクトディレクトリに移動:
+```bash
+cd プロジェクト名
+```
+
+### その他のよくある問題
+
+1. ポートが使用中の場合:
+```bash
+# プロセスの確認
+lsof -i :3000  # フロントエンド
+lsof -i :3001  # バックエンド
+
+# プロセスの終了
 kill -9 <プロセスID>
 ```
 
