@@ -1,25 +1,14 @@
 import '@testing-library/jest-dom';
-import { server } from './mock-server';
 
-// MSWサーバーの設定
-beforeAll(() => server.listen());
-afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
-
-// グローバルなテストタイムアウトの設定
-jest.setTimeout(10000);
-
-// コンソールエラーの抑制（必要に応じて）
-const originalError = console.error;
+// 基本的なテスト環境のセットアップ
 beforeAll(() => {
-  console.error = (...args) => {
-    if (/Warning.*not wrapped in act/.test(args[0])) {
-      return;
-    }
-    originalError.call(console, ...args);
-  };
+  // グローバルなセットアップが必要な場合はここに追加
+});
+
+afterEach(() => {
+  // 各テスト後のクリーンアップ
 });
 
 afterAll(() => {
-  console.error = originalError;
+  // すべてのテスト終了後のクリーンアップ
 });

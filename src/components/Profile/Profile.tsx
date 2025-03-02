@@ -6,12 +6,12 @@ interface ProfileData {
   email: string;
 }
 
-export const Profile: React.FC = () => {
+const Profile: React.FC = () => {
   const [profile, setProfile] = useState<ProfileData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [editedName, setEditedName] = useState('');
+  const [editName, setEditName] = useState('');
 
   useEffect(() => {
     fetchProfile();
@@ -25,11 +25,12 @@ export const Profile: React.FC = () => {
       }
       const data = await response.json();
       setProfile(data);
-      setEditedName(data.name);
+      setEditName(data.name);
+      setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError('Error loading profile');
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -40,9 +41,9 @@ export const Profile: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name: editedName }),
+        body: JSON.stringify({ name: editName }),
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to update profile');
       }
@@ -50,44 +51,39 @@ export const Profile: React.FC = () => {
       const updatedProfile = await response.json();
       setProfile(updatedProfile);
       setIsEditing(false);
+      setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError('Error updating profile');
     }
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
-  if (!profile) {
-    return <div>No profile data</div>;
-  }
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
+  if (!profile) return null;
 
   return (
     <div>
-      {isEditing ? (
-        <div>
-          <label htmlFor="name">Name:</label>
-          <input
-            id="name"
-            type="text"
-            value={editedName}
-            onChange={(e) => setEditedName(e.target.value)}
-          />
-          <button onClick={handleUpdate}>Save</button>
-          <button onClick={() => setIsEditing(false)}>Cancel</button>
-        </div>
-      ) : (
-        <div>
+      {!isEditing ? (
+        <>
           <h2>{profile.name}</h2>
           <p>{profile.email}</p>
           <button onClick={() => setIsEditing(true)}>Edit</button>
-        </div>
+        </>
+      ) : (
+        <>
+          <label>
+            Name:
+            <input
+              value={editName}
+              onChange={(e) => setEditName(e.target.value)}
+            />
+          </label>
+          <button onClick={handleUpdate}>Save</button>
+          <button onClick={() => setIsEditing(false)}>Cancel</button>
+        </>
       )}
     </div>
   );
 };
+
+export default Profile;

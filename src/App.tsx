@@ -1,15 +1,13 @@
 import React from 'react';
-import './App.css';
-import Profile from './components/Profile';
+import Profile from './components/Profile/Profile';
 
-function App() {
+const App: React.FC = () => {
   return (
-    <div className="App">
-      <main className="main-content">
-        <Profile />
-      </main>
+    <div>
+      <h1>User Profile</h1>
+      <Profile />
     </div>
   );
-}
+};
 
 export default App;
