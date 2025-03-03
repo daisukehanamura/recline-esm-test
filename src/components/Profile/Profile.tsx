@@ -1,93 +1,59 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface ProfileData {
-  id: number;
   name: string;
-  email: string;
+  title: string;
+  description: string;
+  skills: string[];
+  interests: string[];
 }
 
-export const Profile: React.FC = () => {
+const Profile: React.FC = () => {
   const [profile, setProfile] = useState<ProfileData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedName, setEditedName] = useState('');
 
   useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch('http://localhost:3001/api/profile');
+        const data = await response.json();
+        setProfile(data);
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+      }
+    };
+
     fetchProfile();
   }, []);
 
-  const fetchProfile = async () => {
-    try {
-      const response = await fetch('/api/profile');
-      if (!response.ok) {
-        throw new Error('Failed to fetch profile');
-      }
-      const data = await response.json();
-      setProfile(data);
-      setEditedName(data.name);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleUpdate = async () => {
-    try {
-      const response = await fetch('/api/profile', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name: editedName }),
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to update profile');
-      }
-
-      const updatedProfile = await response.json();
-      setProfile(updatedProfile);
-      setIsEditing(false);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-    }
-  };
-
-  if (loading) {
+  if (!profile) {
     return <div>Loading...</div>;
   }
 
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
-  if (!profile) {
-    return <div>No profile data</div>;
-  }
-
   return (
-    <div>
-      {isEditing ? (
-        <div>
-          <label htmlFor="name">Name:</label>
-          <input
-            id="name"
-            type="text"
-            value={editedName}
-            onChange={(e) => setEditedName(e.target.value)}
-          />
-          <button onClick={handleUpdate}>Save</button>
-          <button onClick={() => setIsEditing(false)}>Cancel</button>
-        </div>
-      ) : (
-        <div>
-          <h2>{profile.name}</h2>
-          <p>{profile.email}</p>
-          <button onClick={() => setIsEditing(true)}>Edit</button>
-        </div>
-      )}
+    <div className="profile-container">
+      <h1>{profile.name}</h1>
+      <h2>{profile.title}</h2>
+      <p>{profile.description}</p>
+      
+      <div className="section">
+        <h3>スキル</h3>
+        <ul>
+          {profile.skills.map((skill, index) => (
+            <li key={index}>{skill}</li>
+          ))}
+        </ul>
+      </div>
+      
+      <div className="section">
+        <h3>興味・関心</h3>
+        <ul>
+          {profile.interests.map((interest, index) => (
+            <li key={index}>{interest}</li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 };
+
+export default Profile;
