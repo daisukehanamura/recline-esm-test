@@ -21,7 +21,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "npx ts-node --esm src/server/index.ts",
+    "start": "concurrently \"npm run start:server\" \"npm run start:client\"",
+    "start:server": "npx ts-node --esm src/server/index.ts",
     "start:client": "react-scripts start",
     "build": "react-scripts build",
     "test": "jest",
@@ -49,6 +50,7 @@
   },
   "devDependencies": {
     "@types/jest": "^29.5.10",
+    "concurrently": "^9.1.2",
     "identity-obj-proxy": "^3.0.0",
     "jest-environment-jsdom": "^29.7.0",
     "jest-watch-typeahead": "^2.2.1",
