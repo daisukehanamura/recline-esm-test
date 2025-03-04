@@ -8,7 +8,7 @@ function App() {
     <div className="App">
       <main className="main-content">
         <Profile />
-        <Monologue post="つぶやきだお" />
+        <Monologue post="つぶやきだお" post2="だおだお" />
       </main>
     </div>
   );
