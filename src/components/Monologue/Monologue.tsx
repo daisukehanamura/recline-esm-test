@@ -3,7 +3,7 @@ type MonologueProps = {
     post2: string
  };
 
-export const Monologue = ({post,post2} : MonologueProps) => {
+const Monologue = ({post,post2} : MonologueProps) => {
     return (
         <div className="post-container">
         <h3>今日のつぶやき</h3>
