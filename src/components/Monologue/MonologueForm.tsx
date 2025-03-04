@@ -7,7 +7,7 @@ type MonologueItem = {
 };
 const MonologueForm = () => {
     const [post, setPost] = useState<MonologueItem[]>([]);
-    const [inputText, setInputText] = useState(''); 
+    const [inputText, setInputText] = useState<string>(''); 
 
     const addPost = (text: string) => {
         setPost([
