@@ -3,6 +3,7 @@ type MonologueProps = {
     post2: string
  };
 
+ // Propsの勉強
 const Monologue = ({post,post2} : MonologueProps) => {
     return (
         <div className="post-container">

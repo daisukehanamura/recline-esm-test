@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './MonologueForm.css';
 
 type MonologueItem = {
     id: number;
@@ -34,17 +35,34 @@ const MonologueForm = () => {
     };
 
     return (
-        <div>
-            <form onSubmit={handleSubmit}>
-                <input type="text" value={inputText} 
-                    onChange={(e) => setInputText(e.target.value)}/>
-                <button type="submit">投稿</button>
+        <div className="monologue-container">
+            <form onSubmit={handleSubmit} className="monologue-form">
+                <div className="input-container">
+                    <input 
+                        type="text" 
+                        value={inputText} 
+                        onChange={(e) => setInputText(e.target.value)}
+                        placeholder="投稿内容を入力してください"
+                        className="text-input"
+                    />
+                    <button type="submit" className="submit-button">投稿</button>
+                </div>
             </form>
-            <div>
+            <div className="posts-container">
                 {post.map((item) => (
-                    <div key={item.id}>
-                        {item.text}
-                        <button onClick={() => handleDelete(item.id)}>削除</button>
+                    <div key={item.id} className="post-item">
+                        <p className="post-text">{item.text}</p>
+                        <div className="post-footer">
+                            <span className="timestamp">
+                                {item.timestamp.toLocaleString()}
+                            </span>
+                            <button 
+                                onClick={() => handleDelete(item.id)}
+                                className="delete-button"
+                            >
+                                削除
+                            </button>
+                        </div>
                     </div>
                 ))}
             </div>
