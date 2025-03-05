@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './MonologueForm.css';
 
 type MonologueItem = {
@@ -9,6 +9,30 @@ type MonologueItem = {
 const MonologueForm = () => {
     const [post, setPost] = useState<MonologueItem[]>([]);
     const [inputText, setInputText] = useState<string>(''); 
+
+    // useEffectの学習,初回表示時
+    // 第二引数に空の配列を渡すことで、初回表示時のみ実行される
+    useEffect(() => {
+        const savedPosts = localStorage.getItem('posts');
+        if (savedPosts) {
+            const parsedPosts = JSON.parse(savedPosts).map((post: any) => (
+                {...post,
+                    timestamp: new Date(post.timestamp)
+                }
+            ));
+            setPost(parsedPosts);
+        }
+        console.log('投稿が追加されました');
+    }, []);
+
+    // useEffectの学習,投稿が追加された時
+    // 第二引数にpostを渡すことで、postが更新された時のみ実行される
+    useEffect(() => {
+        if (post.length > 0) {
+        localStorage.setItem('posts', JSON.stringify(post));
+        console.log('ローカルストレージに保存:', post);
+        }
+    }, [post]);
 
     const addPost = (text: string) => {
         setPost([
