@@ -29,6 +29,10 @@ const MonologueForm = () => {
         }
     };
 
+    const handleDelete = (id: number) => {
+        setPost(post.filter((item) => item.id !== id));
+    };
+
     return (
         <div>
             <form onSubmit={handleSubmit}>
@@ -38,7 +42,10 @@ const MonologueForm = () => {
             </form>
             <div>
                 {post.map((item) => (
-                    <div key={item.id}>{item.text}</div>
+                    <div key={item.id}>
+                        {item.text}
+                        <button onClick={() => handleDelete(item.id)}>削除</button>
+                    </div>
                 ))}
             </div>
         </div>
