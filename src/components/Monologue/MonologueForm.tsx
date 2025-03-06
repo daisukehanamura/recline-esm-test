@@ -25,6 +25,17 @@ const MonologueForm = () => {
         }
     }, [inputText]);
 
+    // 新しい投稿が追加された時の自動スクロール
+    useEffect(() => {
+        if(post.length > 0) {
+            postsContainerRef.current?.scrollTo({
+                top: postsContainerRef.current.scrollHeight,
+                behavior: 'smooth',
+            });
+            console.log('投稿されて自動スクロール')
+        }
+    }, [post]);
+
     // useEffectの学習,初回表示時
     // 第二引数に空の配列を渡すことで、初回表示時のみ実行される
     useEffect(() => {
@@ -88,7 +99,10 @@ const MonologueForm = () => {
                     <button type="submit" className="submit-button">投稿</button>
                 </div>
             </form>
-            <div className="posts-container">
+            <div 
+                ref={postsContainerRef}
+                className="posts-container"
+            >
                 {post.map((item) => (
                     <div key={item.id} className="post-item">
                         <p className="post-text">{item.text}</p>
