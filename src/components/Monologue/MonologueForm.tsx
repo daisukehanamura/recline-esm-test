@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import './MonologueForm.css';
 
 type MonologueItem = {
@@ -80,9 +80,10 @@ const MonologueForm = () => {
         }
     };
 
-    const handleDelete = (id: number) => {
-        setPost(post.filter((item) => item.id !== id));
-    };
+    // callback関数を定義
+    const handleDelete = useCallback((id: number) => {
+        setPost(prevPost => prevPost.filter(item => item.id !== id));
+    }, []); // 依存配列が空なので、関数は一度だけ作成される
 
     return (
         <div className="monologue-container">
