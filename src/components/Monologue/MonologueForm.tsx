@@ -10,6 +10,21 @@ const MonologueForm = () => {
     const [post, setPost] = useState<MonologueItem[]>([]);
     const [inputText, setInputText] = useState<string>(''); 
 
+    const inputRef = React.useRef<HTMLInputElement>(null);
+    const postsContainerRef = React.useRef<HTMLDivElement>(null);
+
+    // useRefを使用する
+    // ↓ 以下の3つの要素で構成されています
+    // 1. inputRef.current  // RefオブジェクトのDOM参照
+    // 2. ?.               // オプショナルチェーン演算子
+    // 3. focus()          // DOM APIのメソッド
+    useEffect(() => {
+        if (inputText === '') {
+            inputRef.current?.focus();
+            console.log('フォーカスが移動しました');
+        }
+    }, [inputText]);
+
     // useEffectの学習,初回表示時
     // 第二引数に空の配列を渡すことで、初回表示時のみ実行される
     useEffect(() => {
@@ -63,6 +78,7 @@ const MonologueForm = () => {
             <form onSubmit={handleSubmit} className="monologue-form">
                 <div className="input-container">
                     <input 
+                        ref={inputRef}
                         type="text" 
                         value={inputText} 
                         onChange={(e) => setInputText(e.target.value)}
