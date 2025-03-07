@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import './MonologueForm.css';
 
 type MonologueItem = {
@@ -12,6 +12,20 @@ const MonologueForm = () => {
 
     const inputRef = React.useRef<HTMLInputElement>(null);
     const postsContainerRef = React.useRef<HTMLDivElement>(null);
+
+    // useMemoを使用する
+    // 計算コストの高い処理を最適化する（ハッシュ化みたいなもの）
+    const stats = useMemo(() => {
+        console.log('計算中')
+        return {
+            tital: post.length,
+            avarage: post.reduce((acc, curr) =>
+                acc + curr.text.length, 0) / post.length || 0,
+        };
+    },[post]);
+
+    console.log('投稿総数:', stats.tital);
+    console.log('平均文字数:', stats.avarage);
 
     // useRefを使用する
     // ↓ 以下の3つの要素で構成されています
@@ -53,6 +67,7 @@ const MonologueForm = () => {
 
     // useEffectの学習,投稿が追加された時
     // 第二引数にpostを渡すことで、postが更新された時のみ実行される
+    // コンポーネントのレンダリング後に実行
     useEffect(() => {
         if (post.length > 0) {
         localStorage.setItem('posts', JSON.stringify(post));
