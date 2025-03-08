@@ -15,6 +15,7 @@ const MonologueForm = () => {
 
     // useMemoを使用する
     // 計算コストの高い処理を最適化する（ハッシュ化みたいなもの）
+    // レンダリング中にお実行される、戻り値を返す
     const stats = useMemo(() => {
         console.log('計算中')
         return {
@@ -67,7 +68,7 @@ const MonologueForm = () => {
 
     // useEffectの学習,投稿が追加された時
     // 第二引数にpostを渡すことで、postが更新された時のみ実行される
-    // コンポーネントのレンダリング後に実行
+    // コンポーネントのレンダリング後に実行、戻り値を返さない
     useEffect(() => {
         if (post.length > 0) {
         localStorage.setItem('posts', JSON.stringify(post));
