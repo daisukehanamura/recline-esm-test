@@ -7,7 +7,8 @@ interface ProfileData {
   skills: string[];
   interests: string[];
 }
-
+// React.FCはReact.FunctionComponentの略
+// 記述しなくても自動的に型推論してくれる
 const Profile: React.FC = () => {
   const [profile, setProfile] = useState<ProfileData | null>(null);
 
