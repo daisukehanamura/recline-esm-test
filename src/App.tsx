@@ -1,26 +1,48 @@
 import React from 'react';
 import './App.css';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, NavLink } from 'react-router-dom';
 import Profile from './components/Profile/Profile';
-import Monologue from './components/Monologue/Monologue';
 import MonologueForm from './components/Monologue/MonologueForm';
+import PropsStudy from './components/ReactStudy/PropsStudy';
+import './styles/Navigation.css';
 
 function App() {
   return (
     <Router>
       <div className="App">
-        <nav>
-          <Link to="/">ホーム</Link>
-          <Link to="/todoPosts">TODOPosts</Link>
+      <nav className="nav-container">
+          <div className="nav-links">
+            <NavLink 
+              to="/" 
+              className={({ isActive }) => 
+                isActive ? 'nav-link active' : 'nav-link'
+              }
+            >
+              ホーム
+            </NavLink>
+            <NavLink 
+              to="/todoPosts" 
+              className={({ isActive }) => 
+                isActive ? 'nav-link active' : 'nav-link'
+              }
+            >
+              TODOPosts
+            </NavLink>
+            <NavLink 
+              to="/reactStudy" 
+              className={({ isActive }) => 
+                isActive ? 'nav-link active' : 'nav-link'
+              }
+            >
+              ReactStudy
+            </NavLink>
+          </div>
         </nav>
         <Routes>
+          <Route path="/" element={<Profile />} />
           <Route path="/todoPosts" element={<MonologueForm />} />
+          <Route path="/reactStudy" element={<PropsStudy post="つぶやきだお" post2="だおだお"/>} />
         </Routes>
-        <main className="main-content">
-          <Profile />
-          <Monologue post="つぶやきだお" post2="だおだお" />
-          <MonologueForm />
-        </main>
       </div>
     </Router>
   );

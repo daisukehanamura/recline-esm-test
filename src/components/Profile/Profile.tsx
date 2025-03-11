@@ -31,29 +31,31 @@ const Profile: React.FC = () => {
   }
 
   return (
-    <div className="profile-container">
-      <h1>{profile.name}</h1>
-      <h2>{profile.title}</h2>
-      <p>{profile.description}</p>
-      
-      <div className="section">
-        <h3>スキル</h3>
-        <ul>
-          {profile.skills.map((skill, index) => (
-            <li key={index}>{skill}</li>
-          ))}
-        </ul>
+    <main className="main-content">
+      <div className="profile-container">
+        <h1>{profile.name}</h1>
+        <h2>{profile.title}</h2>
+        <p>{profile.description}</p>
+        
+        <div className="section">
+          <h3>スキル</h3>
+          <ul>
+            {profile.skills.map((skill, index) => (
+              <li key={index}>{skill}</li>
+            ))}
+          </ul>
+        </div>
+        
+        <div className="section">
+          <h3>興味・関心</h3>
+          <ul>
+            {profile.interests.map((interest, index) => (
+              <li key={index}>{interest}</li>
+            ))}
+          </ul>
+        </div>
       </div>
-      
-      <div className="section">
-        <h3>興味・関心</h3>
-        <ul>
-          {profile.interests.map((interest, index) => (
-            <li key={index}>{interest}</li>
-          ))}
-        </ul>
-      </div>
-    </div>
+    </main>
   );
 };
 
